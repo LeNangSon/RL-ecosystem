@@ -1,0 +1,205 @@
+/* ============================================================
+   Ecosystem Simulation — design system (forest dark)
+   Palette dùng looked-up colors để mọi control cùng tông.
+   ============================================================ */
+.root {
+    -bg:           #10161b;
+    -panel:        #151d24;
+    -panel-raised: #1b242e;
+    -panel-hover:  #232f3b;
+    -line:         #263240;
+    -text-main:    #dbe5ee;
+    -text-muted:   #8294a5;
+    -accent:       #34d399;
+    -danger:       #f87171;
+    -warn:         #fbbf24;
+    -fx-font-family: "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+
+.app-root { -fx-background-color: -bg; }
+
+/* ---------- thanh điều khiển ngang phía trên (không che map) ---------- */
+.top-bar {
+    -fx-background-color: -panel;
+    -fx-border-color: -line;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 7 10;
+}
+
+/* nút chọn loài để thả xuống map */
+.spawn-toggle {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+    -fx-padding: 4 9;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.spawn-toggle:hover { -fx-background-color: -panel-hover; -fx-text-fill: -text-main; }
+.spawn-toggle:selected {
+    -fx-background-color: linear-gradient(to bottom, #3ee6a4, #22b07d);
+    -fx-text-fill: #06281b;
+    -fx-font-weight: bold;
+    -fx-cursor: crosshair;
+}
+
+.tool-button {
+    -fx-background-color: -panel-raised;
+    -fx-text-fill: -text-main;
+    -fx-background-radius: 8;
+    -fx-padding: 3 9;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+.tool-button:hover { -fx-background-color: -panel-hover; }
+
+/* đồng hồ sinh tồn */
+.clock-chip {
+    -fx-background-color: rgba(251, 191, 36, 0.12);
+    -fx-text-fill: -warn;
+    -fx-font-family: "Menlo", "Consolas", monospace;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 3 10;
+    -fx-background-radius: 999;
+    -fx-border-color: rgba(251, 191, 36, 0.35);
+    -fx-border-radius: 999;
+}
+
+/* dòng gợi ý phím tắt ở chân sidebar */
+.side-footer {
+    -fx-background-color: -bg;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 10.5px;
+    -fx-padding: 6 14;
+    -fx-border-color: -line;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ---------- menu mùa ---------- */
+.menu-button {
+    -fx-background-color: -panel-raised;
+    -fx-text-fill: -text-main;
+    -fx-background-radius: 8;
+    -fx-padding: 3 8;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+.menu-button:hover { -fx-background-color: -panel-hover; }
+.menu-button .label { -fx-text-fill: -text-main; }
+.menu-button .arrow { -fx-background-color: -text-muted; }
+
+.context-menu {
+    -fx-background-color: -panel-raised;
+    -fx-background-radius: 10;
+    -fx-border-color: -line;
+    -fx-border-radius: 10;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 14, 0.2, 0, 4);
+}
+.radio-menu-item { -fx-padding: 5 12; }
+.radio-menu-item .label { -fx-text-fill: -text-main; -fx-font-size: 12px; }
+.radio-menu-item:focused { -fx-background-color: -panel-hover; -fx-background-radius: 6; }
+.radio-menu-item:checked .label { -fx-text-fill: -accent; -fx-font-weight: bold; }
+
+/* ---------- slider zoom ---------- */
+.slider .track { -fx-background-color: -line; -fx-background-radius: 4; -fx-pref-height: 4; }
+.slider .thumb {
+    -fx-background-color: -accent;
+    -fx-background-radius: 999;
+    -fx-pref-height: 13;
+    -fx-pref-width: 13;
+}
+.slider .thumb:hover { -fx-background-color: derive(-accent, 25%); }
+
+/* ---------- sidebar phải ---------- */
+.sidebar { -fx-background-color: -panel; -fx-border-color: -line; -fx-border-width: 0 0 0 1; }
+.side-header {
+    -fx-background-color: -bg;
+    -fx-padding: 12 14 10 14;
+    -fx-border-color: -line;
+    -fx-border-width: 0 0 1 0;
+}
+.app-title { -fx-text-fill: -text-main; -fx-font-size: 16px; -fx-font-weight: bold; }
+.app-subtitle { -fx-text-fill: -text-muted; -fx-font-size: 10.5px; }
+
+/* tab Nhật ký / Thống kê */
+.seg-bar { -fx-background-color: -panel-raised; -fx-background-radius: 10; -fx-padding: 3; }
+.seg-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+    -fx-padding: 5 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.seg-button:hover { -fx-text-fill: -text-main; }
+.seg-button:selected {
+    -fx-background-color: -panel-hover;
+    -fx-text-fill: -accent;
+    -fx-font-weight: bold;
+}
+
+/* ---------- nhật ký sự kiện ---------- */
+.log-list {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 6;
+}
+.log-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-main;
+    -fx-font-family: "Menlo", "Consolas", monospace;
+    -fx-font-size: 11.5px;
+    -fx-padding: 5 8;
+    -fx-background-radius: 6;
+}
+.log-list .list-cell:odd { -fx-background-color: rgba(255, 255, 255, 0.02); }
+.log-list .list-cell:hover { -fx-background-color: -panel-hover; }
+
+/* ---------- list & table chung (panel thống kê) ---------- */
+.list-view { -fx-background-color: transparent; }
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: -panel;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 4;
+}
+.table-view .column-header-background { -fx-background-color: -bg; }
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: -line;
+    -fx-border-width: 0 0 1 0;
+}
+.table-view .column-header .label { -fx-text-fill: -text-muted; -fx-font-size: 11px; -fx-font-weight: bold; }
+.table-view .table-row-cell { -fx-background-color: transparent; }
+.table-view .table-row-cell:odd { -fx-background-color: rgba(255, 255, 255, 0.02); }
+.table-view .table-cell { -fx-text-fill: -text-main; -fx-border-color: transparent; }
+.table-view .filler { -fx-background-color: transparent; }
+.table-view:focused .table-row-cell:selected { -fx-background-color: -panel-hover; }
+.table-view .placeholder .label { -fx-text-fill: -text-muted; }
+
+.progress-bar { -fx-background-radius: 6; }
+.progress-bar .track { -fx-background-color: #232c36; -fx-background-radius: 6; }
+.progress-bar .bar { -fx-background-radius: 6; -fx-background-insets: 1; -fx-padding: 6; }
+
+/* ---------- scrollbar mảnh ---------- */
+.scroll-bar { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: #33414f; -fx-background-radius: 999; }
+.scroll-bar .thumb:hover { -fx-background-color: #41546a; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; -fx-padding: 2; }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-background-color: transparent; -fx-shape: " "; -fx-padding: 0; }
+.scroll-bar:vertical { -fx-pref-width: 9; }
+.scroll-bar:horizontal { -fx-pref-height: 9; }
+.corner { -fx-background-color: transparent; }
+
+.tooltip {
+    -fx-background-color: -panel-raised;
+    -fx-text-fill: -text-main;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8;
+    -fx-padding: 5 9;
+    -fx-border-color: -line;
+    -fx-border-radius: 8;
+}

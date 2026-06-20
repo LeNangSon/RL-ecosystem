@@ -1,0 +1,1099 @@
+% ===================================================================
+%  BÁO CÁO ĐỒ ÁN MÔN HỌC: LẬP TRÌNH HƯỚNG ĐỐI TƯỢNG (OOP)
+%  Đề tài: Mô phỏng Hệ sinh thái 2D (Ecosystem Simulation)
+%  Biên dịch: pdfLaTeX trên Overleaf
+%  Ghi chú: Comment trong các đoạn code (lstlisting) viết không dấu
+%           để tránh lỗi font của gói `listings` với ký tự UTF-8.
+% ===================================================================
+\documentclass[12pt,a4paper]{report}
+
+% ===== PACKAGES =====
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[english,vietnamese]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}   % [table] -> kich hoat \rowcolor, \columncolor (colortbl)
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{hyperref}
+
+% ===== PAGE GEOMETRY =====
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm}
+
+% ===== COLORS =====
+\definecolor{primaryblue}{RGB}{0, 84, 166}
+\definecolor{codegreen}{RGB}{40, 167, 69}
+\definecolor{codegray}{RGB}{128, 128, 128}
+\definecolor{codepurple}{RGB}{111, 66, 193}
+\definecolor{codebackground}{RGB}{248, 249, 250}
+\definecolor{tablehead}{RGB}{52, 73, 94}
+\definecolor{tablerow}{RGB}{236, 240, 241}
+\definecolor{warningbg}{RGB}{255, 243, 205}
+\definecolor{infobg}{RGB}{209, 236, 241}
+
+% ===== CODE LISTING STYLE =====
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{codebackground},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{primaryblue}\bfseries,
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=8pt,
+    numberstyle=\tiny\color{codegray},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+    rulecolor=\color{gray!30},
+    xleftmargin=15pt,
+    framexleftmargin=15pt,
+    language=Java
+}
+\lstdefinestyle{pseudostyle}{
+    backgroundcolor=\color{codebackground},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{gray!30},
+    xleftmargin=10pt,
+}
+\lstset{style=javastyle}
+
+% ===== HEADER / FOOTER =====
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{primaryblue}{\textbf{Báo cáo Đồ án OOP}}}
+\fancyhead[R]{\small\textcolor{gray}{Mô phỏng Hệ sinh thái 2D}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ===== TITLE FORMAT =====
+\titleformat{\chapter}[block]
+    {\normalfont\Large\bfseries\color{primaryblue}}
+    {\thechapter.}{0.8em}{}
+    [\vspace{-0.5em}\rule{\textwidth}{1pt}\vspace{0.5em}]
+\titleformat{\section}[block]
+    {\normalfont\large\bfseries\color{primaryblue!80}}
+    {\thesection}{0.8em}{}
+\titleformat{\subsection}[block]
+    {\normalfont\normalsize\bfseries}
+    {\thesubsection}{0.8em}{}
+
+% ===== TABLE STYLE =====
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% ===== HYPERREF SETUP =====
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryblue,
+    filecolor=primaryblue,
+    urlcolor=primaryblue,
+    citecolor=primaryblue,
+    pdftitle={Bao cao Do an OOP - Mo phong He sinh thai 2D},
+    pdfauthor={Nhom sinh vien},
+}
+
+% ===== SPACING =====
+\onehalfspacing
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.3em}
+
+% ===== CUSTOM COMMANDS =====
+\newcommand{\keyword}[1]{\textcolor{primaryblue}{\textbf{#1}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\note}[1]{%
+  \begin{mdframed}[backgroundcolor=infobg,linecolor=primaryblue,linewidth=0.8pt,
+                   roundcorner=4pt,skipabove=6pt,skipbelow=6pt]#1\end{mdframed}}
+
+% ===================================================
+%                   DOCUMENT START
+% ===================================================
+\begin{document}
+
+% ===== TITLE PAGE =====
+\begin{titlepage}
+    \centering
+    \vspace*{0.6cm}
+
+    {\large\textbf{TRƯỜNG ĐẠI HỌC \dots}\\[0.3em]
+    \normalsize KHOA CÔNG NGHỆ THÔNG TIN}
+
+    \vspace{1.4cm}
+    \rule{\textwidth}{2pt}
+    \vspace{0.5cm}
+
+    {\Huge\bfseries\color{primaryblue}
+    BÁO CÁO ĐỒ ÁN\\[0.4em]
+    LẬP TRÌNH HƯỚNG ĐỐI TƯỢNG}
+
+    \vspace{0.5cm}
+    \rule{\textwidth}{2pt}
+    \vspace{1cm}
+
+    {\LARGE\bfseries Mô phỏng Hệ sinh thái 2D}\\[0.5em]
+    {\large\textit{Ecosystem Simulation using Java \& JavaFX}}
+
+    \vspace{1.6cm}
+
+    \begin{mdframed}[backgroundcolor=infobg,linecolor=primaryblue,linewidth=1.5pt]
+    \centering
+    \vspace{0.3cm}
+    {\large\textbf{Thông tin chung}}\\[0.8em]
+    \begin{tabular}{ll}
+        \textbf{Môn học:} & Lập trình hướng đối tượng \\[0.3em]
+        \textbf{Ngôn ngữ:} & Java 25 \\[0.3em]
+        \textbf{Nền tảng đồ họa:} & JavaFX 21 \\[0.3em]
+        \textbf{Tên dự án:} & OOP-PRJ \\[0.3em]
+        \textbf{Quy mô:} & 37 lớp Java \\[0.3em]
+    \end{tabular}
+    \vspace{0.3cm}
+    \end{mdframed}
+
+    \vspace{1.0cm}
+
+    \begin{mdframed}[linecolor=gray!50,linewidth=0.8pt]
+    \centering
+    \textbf{Nhóm sinh viên thực hiện}\\[0.5em]
+    \begin{tabular}{L{6cm} L{4cm}}
+        Họ và tên & Mã số sinh viên \\
+        \hline
+        \dots\dots\dots\dots\dots\dots\dots & \dots\dots\dots \\
+        \dots\dots\dots\dots\dots\dots\dots & \dots\dots\dots \\
+        \dots\dots\dots\dots\dots\dots\dots & \dots\dots\dots \\
+    \end{tabular}\\[0.6em]
+    Giảng viên hướng dẫn: \dots\dots\dots\dots\dots
+    \end{mdframed}
+
+    \vfill
+    {\large Năm học 2025 -- 2026}
+\end{titlepage}
+
+% ===== TABLE OF CONTENTS =====
+\tableofcontents
+\newpage
+
+% ===================================================
+%                   CHAPTER 1
+% ===================================================
+\chapter{Giới thiệu tổng quan}
+
+\section{Đặt vấn đề}
+
+Hệ sinh thái tự nhiên là một hệ thống phức tạp gồm nhiều loài sinh vật tương tác với nhau và với môi trường thông qua các hành vi sinh tồn cơ bản: \keyword{tìm thức ăn}, \keyword{uống nước}, \keyword{sinh sản}, \keyword{săn mồi} và \keyword{né tránh kẻ thù}. Việc mô phỏng lại hệ thống này bằng phần mềm là một bài toán rất phù hợp để vận dụng tư duy \keyword{Lập trình hướng đối tượng} (OOP): mỗi sinh vật là một \textit{đối tượng} có thuộc tính và hành vi riêng, các loài có quan hệ \textit{kế thừa} tự nhiên (động vật ăn cỏ / ăn thịt), và hành vi của chúng có thể được \textit{trừu tượng hóa} và thay thế linh hoạt.
+
+Dự án xây dựng một \keyword{hệ thống mô phỏng hệ sinh thái 2D} chạy theo thời gian thực, trong đó các loài động vật tự động ra quyết định và hành động trên một bản đồ địa hình đa dạng. Hệ thống mô phỏng đầy đủ vòng đời của một quần thể -- từ lúc khởi tạo cho đến khi toàn bộ sinh vật tuyệt chủng -- kèm theo các thống kê chi tiết về số lượng cá thể, nguyên nhân tử vong và thời gian tồn tại của hệ sinh thái.
+
+\section{Mục tiêu của đồ án}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item Vận dụng đầy đủ \keyword{bốn tính chất của OOP}: trừu tượng, đóng gói, kế thừa và đa hình.
+    \item Áp dụng các \keyword{mẫu thiết kế} (design pattern) kinh điển: Strategy, Observer, Template Method, Factory Method.
+    \item Thiết kế hệ thống \keyword{trí tuệ nhân tạo} cho động vật với nhiều chiến lược hành vi, kết hợp thuật toán tìm đường \keyword{A*}.
+    \item Xây dựng \keyword{giao diện trực quan} bằng JavaFX với khả năng tương tác (zoom, pan, đặt sinh vật, xem thống kê).
+    \item Bảo đảm \keyword{tính mở rộng}: dễ dàng thêm loài mới, hành vi mới hay loại địa hình mới mà ít sửa code cũ.
+\end{itemize}
+
+\section{Công nghệ sử dụng}
+
+\begin{table}[H]
+\centering
+\caption{Công nghệ và thư viện sử dụng}
+\begin{tabular}{L{4cm} L{8.5cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Thành phần}} & \textcolor{white}{\textbf{Công nghệ}} \\
+\midrule
+Ngôn ngữ & Java 25 (\code{source}/\code{target} = 25) \\
+\rowcolor{tablerow} Đồ họa \& Giao diện & JavaFX 21.0.6 (Canvas, GraphicsContext, AnimationTimer) \\
+Công cụ build & Apache Maven (\code{javafx-maven-plugin}) \\
+\rowcolor{tablerow} Biên tập bản đồ & Tiled Map Editor (xuất file \code{.tmx}) \\
+Đọc dữ liệu bản đồ & DOM XML Parser (\code{javax.xml.parsers}) \\
+\rowcolor{tablerow} Kiểm thử & JUnit 5 (Jupiter) \\
+Tổng số lớp Java & 37 lớp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Tính năng nổi bật}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \keyword{5 loài động vật} (Thỏ, Sói, Gấu, Voi, Cá) với AI độc lập và hành vi sinh tồn đầy đủ.
+    \item \keyword{Hệ thống chiến lược} (Strategy) cho phép động vật tự chuyển đổi hành vi mỗi khung hình dựa trên trạng thái sinh tồn.
+    \item \keyword{Thuật toán A*} tìm đường tránh vật cản trên lưới địa hình, kết hợp kỹ thuật \textit{path densification}, \textit{caching} và \textit{lead pursuit} (đón đầu con mồi).
+    \item \keyword{Bản đồ 4 mùa} (Xuân, Hạ, Thu, Đông) dùng chung một file địa hình \code{all.tmx}, tự động chuyển mùa kèm hiệu ứng hòa hình.
+    \item \keyword{Địa hình đa dạng}: đất liền, mặt nước, đá, bụi rậm, máng nước uống.
+    \item \keyword{Tương tác thời gian thực}: phóng to/thu nhỏ, kéo bản đồ, đặt thêm sinh vật và vật cản bằng chuột.
+    \item \keyword{Bảng thống kê chi tiết} theo loài và nguyên nhân tử vong, cùng đồng hồ đếm thời gian sinh tồn của hệ sinh thái.
+\end{itemize}
+
+% ===================================================
+%                   CHAPTER 2
+% ===================================================
+\chapter{Phân tích và Thiết kế hướng đối tượng}
+
+Đây là chương trọng tâm, trình bày cách dự án vận dụng các nguyên lý OOP. Trước hết là cấu trúc tổ chức mã nguồn và sơ đồ phân cấp lớp, sau đó là phân tích chi tiết bốn tính chất cốt lõi của OOP qua các đoạn mã thực tế.
+
+\section{Cấu trúc package}
+
+Mã nguồn được tổ chức theo nguyên tắc \keyword{phân tách trách nhiệm} (separation of concerns): mỗi package đảm nhiệm một nhóm chức năng rõ ràng.
+
+\begin{lstlisting}[style=pseudostyle, caption={Cấu trúc thư mục dự án}]
+org.openjfx.app/
+|-- MainApp.java             <- Entry point, vong lap game, dieu khien UI
+|-- Launcher.java            <- Lop khoi dong (lach kiem tra runtime JavaFX)
+|-- EntityStatusPanel.java   <- Bang thong ke (TableView/ListView)
+|-- core/
+|   |-- WorldMap.java        <- "Trai tim" he thong: chua entity, A*, render
+|   |-- Vector2D.java        <- Toan vector 2D (add, sub, dot, normalize...)
+|   |-- RelationManager.java <- Quan he chuoi thuc an & moi de doa (static)
+|   |-- GameObserver.java    <- Interface Observer
+|   |-- TerminalLogger.java  <- Observer: ghi log su kien
+|   |-- TmxObjectZones.java  <- Doc vung dia hinh tu file .tmx (XML)
+|   |-- DeathCause.java      <- Enum: HUNGER, THIRST, PREDATION
+|   |-- EntityType.java      <- Enum: cac loai entity
+|   |-- strategies/          <- Cac chien luoc di chuyen (Strategy Pattern)
+|   |   |-- MoveStrategy.java       (interface)
+|   |   |-- StrategyCandidate.java  (chon chien luoc theo diem so)
+|   |   |-- WanderStrategy.java
+|   |   |-- FleeStrategy.java
+|   |   |-- HunterStrategy.java
+|   |   |-- SeekWaterStrategy.java
+|   |   +-- MateStrategy.java
+|   +-- terrain/
+|       |-- TerrainType.java     <- Enum: LAND, WATER, ROCK, BUSH, PIT
+|       +-- TerrainProvider.java <- Interface vat the cung cap dia hinh
++-- entities/
+    |-- base/        <- 6 lop co so truu tuong
+    |   |-- Entity.java
+    |   |-- MovableEntity.java
+    |   |-- LivingEntity.java
+    |   |-- Herbivore.java
+    |   |-- Carnivore.java
+    |   +-- StaticEntity.java
+    |-- movable/     <- 5 loai dong vat
+    |   |-- Rabbit.java   Wolf.java   Bear.java
+    |   +-- Elephant.java Fish.java
+    +-- staticobjs/  <- Thuc vat & vat can
+        |-- Plant.java  Grass.java  Algae.java
+        +-- Obstacle.java  Bush.java  Rock.java
+\end{lstlisting}
+
+\section{Sơ đồ phân cấp lớp (Class Hierarchy)}
+
+Toàn bộ vật thể trong thế giới mô phỏng đều kế thừa từ lớp trừu tượng gốc \code{Entity}. Cây kế thừa được chia thành hai nhánh lớn: vật thể \keyword{di chuyển được} và vật thể \keyword{tĩnh}.
+
+\begin{lstlisting}[style=pseudostyle, caption={Phân cấp lớp Entity (vật thể sống và di chuyển)}]
+Entity  (abstract: position, id, size, type; abstract update())
+|
++-- MovableEntity  (abstract: velocity, acceleration, mass,
+|   |                         maxSpeed, maxForce; move())
+|   |
+|   +-- LivingEntity  (abstract: health, hunger, thirst, age,
+|       |               moveStrategy, vision; sinh san, an, uong)
+|       |
+|       +-- Herbivore  (abstract: chon strategy cho dong vat an co)
+|       |   |-- Rabbit     (nho, nhanh, tron vao bui rom)
+|       |   |-- Elephant   (to, khong so ai, uong o mang nuoc)
+|       |   +-- Fish       (chi song duoi nuoc, khong khat)
+|       |
+|       +-- Carnivore  (abstract: chon strategy cho dong vat an thit)
+|           |-- Wolf        (san Tho)
+|           +-- Bear        (apex predator: san Tho, Ca)
+|
++-- StaticEntity  (abstract: vat the tinh)
+    |
+    +-- Plant  (abstract: nutrition, regrow, sinh san)
+    |   |-- Grass    (thuc an tren can, moc lai sau khi bi an)
+    |   +-- Algae    (thuc an duoi nuoc)
+    |
+    +-- Obstacle  (abstract, implements TerrainProvider)
+        |-- Bush     (noi an nap cua Tho -> TerrainType.BUSH)
+        +-- Rock     (vat can bat kha xam pham -> TerrainType.ROCK)
+\end{lstlisting}
+
+\note{Cây kế thừa sâu (tới 5--6 cấp) cho phép \textbf{tái sử dụng tối đa}: ví dụ logic tính đói/khát, hồi máu, né vật cản, sinh sản chỉ được viết \emph{một lần} trong \code{LivingEntity} và được \emph{tất cả} 5 loài động vật dùng chung.}
+
+\section{Bốn tính chất của Lập trình hướng đối tượng}
+
+\subsection{Tính trừu tượng (Abstraction)}
+
+Trừu tượng hóa nghĩa là chỉ phơi bày những đặc điểm \textit{bản chất} và che giấu chi tiết cài đặt. Dự án sử dụng cả hai cơ chế trừu tượng của Java:
+
+\textbf{(a) Lớp trừu tượng (abstract class)} -- định nghĩa khung chung kèm phương thức trừu tượng buộc lớp con phải hiện thực:
+
+\begin{lstlisting}[caption={Lớp gốc Entity với phương thức trừu tượng}]
+public abstract class Entity {
+    protected Vector2D position;
+    protected final int id;
+    protected double size;
+    protected EntityType type;
+    private static int nextId = 0;
+
+    public Entity(Vector2D position, double size, String shape) {
+        this.position = position;
+        this.size = size;
+        this.id = nextId++;          // moi entity tu dong co id duy nhat
+    }
+    // Buoc moi lop con phai dinh nghia cach "song" cua minh:
+    public abstract void update(double dt, WorldMap world);
+}
+\end{lstlisting}
+
+\textbf{(b) Giao diện (interface)} -- định nghĩa một "hợp đồng" hành vi thuần túy. Dự án có 3 interface quan trọng:
+
+\begin{table}[H]
+\centering
+\caption{Các interface và vai trò trừu tượng}
+\begin{tabular}{L{3.5cm} L{9cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Interface}} & \textcolor{white}{\textbf{Vai trò}} \\
+\midrule
+\code{MoveStrategy} & Trừu tượng hóa "cách di chuyển": mỗi AI hiện thực \code{updateVelocity()} theo cách riêng. \\
+\rowcolor{tablerow} \code{GameObserver} & Trừu tượng hóa "người quan sát sự kiện": ai muốn nghe sự kiện chỉ cần hiện thực interface này. \\
+\code{TerrainProvider} & Trừu tượng hóa "vật thể tạo địa hình": cho phép vật cản đặt thêm vào map khai báo loại địa hình của nó. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Tổng cộng dự án có \keyword{8 lớp trừu tượng} (\code{Entity}, \code{MovableEntity}, \code{LivingEntity}, \code{Herbivore}, \code{Carnivore}, \code{StaticEntity}, \code{Plant}, \code{Obstacle}) và \keyword{3 interface}. Nhờ trừu tượng hóa, phần lớn mã trong hệ thống làm việc với kiểu tổng quát (\code{Entity}, \code{LivingEntity}, \code{MoveStrategy}) chứ không phụ thuộc vào loài cụ thể.
+
+\subsection{Tính đóng gói (Encapsulation)}
+
+Đóng gói nghĩa là \textit{che giấu dữ liệu} bên trong đối tượng và chỉ cho phép truy cập/thay đổi qua các phương thức được kiểm soát. Trong dự án, hầu hết thuộc tính được khai báo \code{private}/\code{protected}, kèm getter/setter có \keyword{kiểm tra ràng buộc} (validation) để đối tượng luôn ở trạng thái hợp lệ:
+
+\begin{lstlisting}[caption={Setter có ràng buộc trong LivingEntity}]
+private double hunger, thirst, health, maxHealth;
+
+public void setHunger(double hunger) {
+    // Doi luon nam trong [0, 100]
+    this.hunger = Math.max(0, Math.min(100, hunger));
+}
+public void setThirst(double thirst) {
+    this.thirst = Math.max(0, Math.min(100, thirst));
+}
+public void setHealth(double health) {
+    // Mau khong vuot qua mau goc cua tung loai
+    this.health = Math.min(health, maxHealth);
+    if (this.health <= 0 && this.isAlive) {
+        this.isAlive = false;        // tu dong chuyen trang thai khi het mau
+    }
+}
+\end{lstlisting}
+
+Một vài ví dụ đóng gói tiêu biểu khác:
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \code{Entity.nextId} là \code{private static} -- không lớp nào can thiệp trực tiếp được vào bộ đếm ID toàn cục, ID lại là \code{final} (bất biến sau khi sinh).
+    \item \code{WorldMap.setScale()} luôn kẹp giá trị zoom trong khoảng $[1.0,\ 3.0]$, \code{setOffset()} tự giới hạn để camera không trôi ra ngoài bản đồ.
+    \item \code{WorldMap.getEntities()} trả về \code{Collections.unmodifiableList(...)} -- bên ngoài \emph{đọc} được danh sách nhưng \emph{không sửa} được, bảo vệ tính toàn vẹn nội bộ.
+    \item Trạng thái \code{drinking} chỉ được bật/tắt nội bộ qua \code{drink()} và \code{setDrinking()} (\code{protected}), bên ngoài chỉ \emph{đọc} qua \code{isDrinking()}.
+\end{itemize}
+
+\subsection{Tính kế thừa (Inheritance)}
+
+Kế thừa cho phép lớp con \keyword{tái sử dụng} và \keyword{chuyên biệt hóa} lớp cha. Chuỗi gọi hàm khởi tạo \code{super(...)} truyền tham số đặc trưng của từng loài lên các lớp cơ sở dùng chung:
+
+\begin{lstlisting}[caption={Lớp Rabbit -- chỉ vài dòng nhờ kế thừa toàn bộ logic sinh tồn}]
+public class Rabbit extends Herbivore {
+    public Rabbit(Vector2D position) {
+        // size, shape, HP, hungerRate, thirstRate, maxSpeed,
+        // maxForce, mass, wanderDistance, wanderRadius
+        super(position, 10.0, "circle", 100.0, 2.0, 5.0,
+              32.0, 38.0, 0.5, 35.0, 12.0);
+        setVisionRadius(50.0);
+        type = EntityType.RABBIT;
+        matureAge = 4.0;           // ghi de tham so sinh san mac dinh
+        reproduceCooldownMax = 10.0;
+        reproduceHungerCost  = 10.0;
+    }
+    @Override
+    protected LivingEntity createOffspring(Vector2D spawnPos) {
+        return new Rabbit(spawnPos);   // tho de ra tho
+    }
+}
+\end{lstlisting}
+
+Toàn bộ logic phức tạp (tính đói/khát theo thời gian, hồi máu, chết đói/khát, né vật cản, phản xạ ở biên bản đồ, chọn chiến lược, sinh sản\dots) nằm ở \code{LivingEntity}/\code{Herbivore}. Mỗi loài chỉ cần khai báo \textit{thông số} và \textit{điểm khác biệt} của riêng nó. Đây chính là sức mạnh của kế thừa: \keyword{viết một lần, dùng cho nhiều loài}.
+
+\subsection{Tính đa hình (Polymorphism)}
+
+Đa hình là khả năng "một lời gọi, nhiều cách thực thi" -- tùy vào kiểu thực sự của đối tượng lúc chạy. Dự án khai thác đa hình ở nhiều mức độ:
+
+\textbf{(a) Ghi đè phương thức \& điều phối động (dynamic dispatch).} \code{WorldMap} giữ một \code{List<Entity>} chứa lẫn lộn mọi loại sinh vật và cây cối. Vòng lặp chỉ gọi \code{update()} mà không cần biết đó là loài gì -- JVM tự chọn đúng phiên bản ghi đè:
+
+\begin{lstlisting}[caption={Đa hình tại vòng lặp cập nhật của WorldMap}]
+for (int i = entities.size() - 1; i >= 0; i--) {
+    Entity e = entities.get(i);
+    e.update(dt, this);   // <- da hinh: Rabbit, Wolf, Grass... chay logic rieng
+    ...
+}
+\end{lstlisting}
+
+\textbf{(b) Đa hình qua Strategy.} Mỗi \code{LivingEntity} giữ một tham chiếu \code{MoveStrategy moveStrategy}. Lời gọi \code{moveStrategy.updateVelocity(...)} sẽ chạy logic của chiến lược hiện hành (Flee, Hunter, Wander\dots) -- và chiến lược này được \emph{thay đổi linh hoạt} ngay trong lúc chạy.
+
+\textbf{(c) Pattern matching \code{instanceof} (Java hiện đại).} Khi cần phân nhánh theo kiểu cụ thể (ví dụ lúc render hay khi ăn), dự án dùng \code{instanceof} kèm khai báo biến:
+
+\begin{lstlisting}[caption={Đa hình có điều kiện khi xác định hành vi ăn}]
+@Override
+public void eat(Entity target, double dt) {
+    if (target instanceof Plant plant) {           // Herbivore an thuc vat
+        setHunger(getHunger() - plant.consume());
+    }
+}
+// Carnivore.eat() lai ghi de khac: an con moi song
+\end{lstlisting}
+
+\textbf{(d) Tập hợp đa hình.} Dự án dùng nhiều danh sách kiểu tổng quát: \code{List<Entity>}, \code{List<LivingEntity>}, \code{List<TerrainProvider>}, \code{List<GameObserver>}, \code{List<MoveStrategy>} -- tất cả đều thao tác trên kiểu trừu tượng.
+
+\section{Các kỹ thuật Java nâng cao}
+
+Ngoài bốn tính chất cốt lõi, dự án còn vận dụng nhiều đặc trưng hiện đại của Java:
+
+\begin{table}[H]
+\centering
+\caption{Kỹ thuật Java được sử dụng}
+\begin{tabular}{L{4cm} L{8.5cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Kỹ thuật}} & \textcolor{white}{\textbf{Nơi áp dụng}} \\
+\midrule
+\code{enum} & \code{EntityType}, \code{DeathCause}, \code{TerrainType}, \code{Season}, \code{SpawnKind} \\
+\rowcolor{tablerow} Generics & \code{List<Entity>}, \code{Map<EntityType, EnumMap<DeathCause,Integer>>}\dots \\
+Functional interface & \code{Supplier<MoveStrategy>}, \code{BiFunction<...,Double>} trong \code{StrategyCandidate} \\
+\rowcolor{tablerow} Lambda \& method reference & \code{FleeStrategy::new}, \code{(e,n) -> ...} (bộ chấm điểm chiến lược) \\
+Switch expression & Chuyển mùa, tạo entity theo \code{SpawnKind}, ánh xạ màu/biểu tượng loài \\
+\rowcolor{tablerow} Stream API & Tổng hợp số liệu trong \code{EntityStatusPanel} \\
+Collections Framework & \code{ArrayList}, \code{HashMap}, \code{EnumMap}, \code{HashSet}, \code{PriorityQueue}, \code{ConcurrentHashMap} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===================================================
+%                   CHAPTER 3
+% ===================================================
+\chapter{Các mẫu thiết kế (Design Patterns)}
+
+Dự án áp dụng nhiều mẫu thiết kế kinh điển nhằm tăng tính linh hoạt và khả năng mở rộng. Bốn mẫu chính được trình bày chi tiết dưới đây.
+
+\section{Strategy Pattern -- mẫu thiết kế trung tâm}
+
+\subsection{Ý tưởng}
+
+Strategy Pattern đóng gói mỗi \textit{thuật toán hành vi} thành một lớp riêng có thể thay thế cho nhau. Đây là pattern cốt lõi của toàn bộ hệ thống AI: thay vì viết một khối \code{if-else} khổng lồ trong mỗi loài, mỗi hành vi sinh tồn được tách thành một \code{MoveStrategy} độc lập.
+
+\begin{lstlisting}[caption={Interface MoveStrategy -- "hợp đồng" của mọi chiến lược}]
+public interface MoveStrategy {
+    void updateVelocity(LivingEntity owner,
+                        List<Entity> neighbors,
+                        double dt,
+                        WorldMap world);
+}
+\end{lstlisting}
+
+Có \keyword{5 chiến lược} hiện thực interface này: \code{WanderStrategy} (lang thang), \code{FleeStrategy} (chạy trốn), \code{HunterStrategy} (tìm/săn mồi), \code{SeekWaterStrategy} (tìm nước) và \code{MateStrategy} (tìm bạn tình).
+
+\subsection{Cơ chế chọn chiến lược theo điểm số}
+
+Điểm độc đáo của dự án là cách \keyword{lựa chọn chiến lược động}. Thay vì cố định thứ tự ưu tiên, mỗi loài có một danh sách \code{StrategyCandidate}; mỗi ứng viên gồm một \code{Supplier} (hàm tạo chiến lược) và một \code{scorer} (hàm chấm điểm theo trạng thái hiện tại). Mỗi khung hình, hệ thống chọn chiến lược có điểm cao nhất.
+
+\begin{lstlisting}[caption={StrategyCandidate -- factory + scorer}]
+public class StrategyCandidate {
+    private final Supplier<MoveStrategy> factory;       // tao chien luoc khi can
+    private final BiFunction<LivingEntity, List<Entity>, Double> scorer;
+    private MoveStrategy instance;       // khoi tao luoi (lazy)
+    private double activeSeconds;
+
+    public static MoveStrategy selectBest(List<StrategyCandidate> candidates,
+            MoveStrategy current, double dt,
+            LivingEntity entity, List<Entity> neighbors) {
+        StrategyCandidate winner = null;
+        double winnerScore = Double.NEGATIVE_INFINITY;
+        for (StrategyCandidate c : candidates) {
+            double score = c.scorer.apply(entity, neighbors);
+            // Thuong "cam ket" cho chien luoc dang chay, giam dan theo thoi gian
+            if (c.instance != null && c.instance == current) {
+                c.activeSeconds += dt;
+                score += COMMIT_BONUS * Math.exp(-c.activeSeconds / COMMIT_DECAY_SECONDS);
+            }
+            if (score > winnerScore) { winnerScore = score; winner = c; }
+        }
+        if (winner == null) return current;
+        if (winner.instance != current) winner.activeSeconds = 0.0; // reset dong ho
+        return winner.getStrategy();
+    }
+}
+\end{lstlisting}
+
+\note{\textbf{Chống "rung" chiến lược (hysteresis).} Khi hai chiến lược có điểm xấp xỉ nhau, con vật dễ "phân vân" nhảy qua lại mỗi frame. Hệ thống cộng thêm một \textbf{thưởng cam kết} ($\text{COMMIT\_BONUS}=0.25$) cho chiến lược đang chạy, nhưng thưởng này \emph{giảm theo hàm mũ} ($\tau = 2$ giây). Nhờ vậy việc vừa bắt đầu được giữ ổn định, nhưng nếu kéo dài thì vẫn nhường chỗ cho nhu cầu cấp thiết hơn -- không "khóa cứng" hành vi.}
+
+\section{Observer Pattern -- tách rời sự kiện và hiển thị}
+
+\code{WorldMap} đóng vai trò \textit{Subject}, phát các sự kiện (sinh sản, săn mồi, tử vong\dots) tới mọi \code{GameObserver} đã đăng ký mà \textbf{không cần biết} chúng là ai hay làm gì với sự kiện.
+
+\begin{lstlisting}[caption={GameObserver và cơ chế phát sự kiện}]
+public interface GameObserver {
+    void onEntityDeath(String message);
+    void onActionOccurred(String actor, String action, String target);
+}
+
+// Trong WorldMap (Subject):
+private final List<GameObserver> observers = new ArrayList<>();
+public void addObserver(GameObserver o) { observers.add(o); }
+public void notifyAction(String actor, String action, String target) {
+    for (GameObserver o : observers) o.onActionOccurred(actor, action, target);
+}
+public void broadcastDeath(String message) {
+    for (GameObserver o : observers) o.onEntityDeath(message);
+}
+\end{lstlisting}
+
+Lớp \code{TerminalLogger} hiện thực \code{GameObserver}, vừa in ra terminal vừa đẩy log lên \code{ListView} của giao diện (qua \code{Platform.runLater} để an toàn luồng). Nhờ tách rời, phần \textit{logic mô phỏng} hoàn toàn không phụ thuộc vào phần \textit{hiển thị}: muốn thêm cách ghi nhận sự kiện mới (ví dụ ghi ra file) chỉ cần viết thêm một Observer.
+
+\section{Template Method Pattern}
+
+Template Method định nghĩa \textit{khung} của một thuật toán ở lớp cha, để lại các "lỗ trống" cho lớp con điền vào. \code{LivingEntity.update()} là một template điển hình: nó cố định trình tự \textit{tiêu hao đói/khát $\to$ già đi $\to$ kiểm tra chết $\to$ di chuyển có né vật cản $\to$ xử lý biên}, trong đó các bước biến đổi được ủy quyền cho lớp con.
+
+Tương tự, \code{Plant.update()} cố định khung "đếm thời gian $\to$ sinh sản / mọc lại", còn \emph{cách} tạo cây con (\code{createNewPlant}) và \emph{điều kiện} mọc (\code{canReproduceAt}) do \code{Grass}/\code{Algae} quyết định:
+
+\begin{lstlisting}[caption={Template Method trong Plant}]
+public abstract class Plant extends StaticEntity {
+    @Override
+    public void update(double dt, WorldMap world) {
+        if (!alive) { ... regrow ... ; return; }
+        reproduceTimer += dt;
+        if (reproduceTimer >= reproduceTime) {
+            reproduce(world);            // khung co dinh
+            reproduceTimer = 0;
+        }
+    }
+    // "Lo trong" cho lop con:
+    protected abstract Plant createNewPlant(Vector2D position);
+    protected boolean canReproduceAt(WorldMap w, Vector2D p) { return true; } // hook
+}
+\end{lstlisting}
+
+\section{Factory Method Pattern}
+
+Lớp cha định nghĩa phương thức tạo đối tượng dưới dạng trừu tượng, để lớp con quyết định tạo ra \textit{kiểu cụ thể} nào. Trong dự án, \code{LivingEntity.createOffspring()} và \code{Plant.createNewPlant()} chính là các Factory Method: logic sinh sản chung gọi factory mà không cần biết loài, mỗi loài tự "đẻ ra" đúng loại của mình (Thỏ đẻ Thỏ, Cỏ mọc Cỏ).
+
+\section{Tổng hợp các mẫu thiết kế}
+
+\begin{table}[H]
+\centering
+\caption{Các design pattern trong dự án}
+\begin{tabular}{L{3.3cm} L{4.5cm} L{4.5cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Pattern}} & \textcolor{white}{\textbf{Nơi áp dụng}} & \textcolor{white}{\textbf{Mục đích}} \\
+\midrule
+Strategy & \code{MoveStrategy} + 5 chiến lược & Thay đổi hành vi AI lúc chạy \\
+\rowcolor{tablerow} Observer & \code{GameObserver}, \code{TerminalLogger} & Tách sự kiện khỏi hiển thị \\
+Template Method & \code{LivingEntity.update}, \code{Plant.update} & Khung thuật toán + điểm tùy biến \\
+\rowcolor{tablerow} Factory Method & \code{createOffspring}, \code{createNewPlant} & Lớp con tự tạo kiểu của mình \\
+Singleton (static) & \code{RelationManager} & Trạng thái quan hệ dùng chung toàn cục \\
+\rowcolor{tablerow} Object Cache & \code{imageCache} trong \code{WorldMap} & Tái dùng ảnh sprite, giảm tải bộ nhớ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===================================================
+%                   CHAPTER 4
+% ===================================================
+\chapter{Hệ thống AI và Thuật toán tìm đường A*}
+
+\section{Kiến trúc vòng lặp AI}
+
+Mỗi khung hình, mỗi động vật thực hiện chu trình \keyword{Cảm nhận -- Quyết định -- Hành động}:
+
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{Cảm nhận:} \code{world.getNeighbors(this, visionRadius)} thu thập các thực thể trong tầm nhìn.
+    \item \textbf{Quyết định:} \code{StrategyCandidate.selectBest(...)} chấm điểm các chiến lược và chọn ra chiến lược thắng.
+    \item \textbf{Hành động:} chiến lược thắng tính toán vận tốc qua \code{updateVelocity(...)}; sau đó \code{super.update()} thực hiện di chuyển có kiểm tra va chạm/địa hình.
+\end{enumerate}
+
+\begin{lstlisting}[caption={Vòng đời quyết định của Herbivore}]
+@Override
+public void update(double dt, WorldMap world) {
+    setDrinking(false);
+    neighbors = world.getNeighbors(this, visionRadius);      // 1. Cam nhan
+    if (candidates == null) candidates = buildCandidates();
+    moveStrategy = StrategyCandidate.selectBest(             // 2. Quyet dinh
+            candidates, moveStrategy, dt, this, neighbors);
+    if (moveStrategy != null && !isAvoidingBlockedPath()) {
+        moveStrategy.updateVelocity(this, neighbors, dt, world); // 3. Hanh dong
+    }
+    super.update(dt, world);   // di chuyen + ne vat can + xu ly bien
+}
+\end{lstlisting}
+
+\section{Thứ tự ưu tiên các chiến lược}
+
+Bảng điểm số quyết định "nhu cầu" nào thắng. Phản xạ sinh tồn (chạy trốn) có điểm áp đảo, còn lang thang là lựa chọn mặc định:
+
+\begin{table}[H]
+\centering
+\caption{Điểm số chiến lược của động vật ăn cỏ (Herbivore)}
+\begin{tabular}{L{3cm} C{2.5cm} L{6.5cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Chiến lược}} & \textcolor{white}{\textbf{Điểm}} & \textcolor{white}{\textbf{Điều kiện kích hoạt}} \\
+\midrule
+FleeStrategy & 100 & Có kẻ thù trong tầm nhìn (áp đảo mọi nhu cầu) \\
+\rowcolor{tablerow} SeekWaterStrategy & 1.4 / $\sim$0.9 & Đang uống dở \& còn khát $>25$; hoặc khát $>70$ \\
+HunterStrategy & hunger/100 & Đói $>60$ hoặc đang đi tìm ăn (và đói $\geq 5$) \\
+\rowcolor{tablerow} MateStrategy & 0.45 & Đủ điều kiện sinh sản \& có bạn tình gần \\
+WanderStrategy & 0.30 & Mặc định khi không có nhu cầu nào nổi trội \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Với \keyword{động vật ăn thịt} (Carnivore), \code{HunterStrategy} được ưu tiên mạnh hơn: nếu có con mồi \textit{rất gần} (độ sát $\geq 0.35$ trên thang $[0,1]$ so với tầm nhìn), điểm săn nhảy lên $3.0$ -- một "cú vồ" phản xạ, thắng cả cơn khát nhưng vẫn thua phản xạ bỏ chạy.
+
+\section{Thuật toán A*}
+
+Bốn chiến lược (\code{Flee}, \code{Hunter}, \code{SeekWater}, \code{Mate}) đều dùng A* để tìm đường tránh vật cản trên lưới địa hình. Bản đồ $576\times576$ pixel được chia thành lưới ô $\sim15$px (kích thước ô = \code{tileSize}$\times$\code{scale}).
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Hàm chi phí:} $f(n) = g(n) + h(n)$, với $g$ là chi phí thực từ điểm xuất phát.
+    \item \textbf{Heuristic:} khoảng cách Euclidean $h = \sqrt{(\Delta r)^2 + (\Delta c)^2}$.
+    \item \textbf{Di chuyển 8 hướng:} 4 hướng thẳng (chi phí $1.0$) và 4 hướng chéo (chi phí $\sqrt{2}$).
+    \item \textbf{Kiểm tra hợp lệ:} \code{canEntityStandOnTerrain()} loại các ô loài đó không đi được.
+    \item \textbf{Khởi tạo node lười (lazy):} chỉ tạo \code{AstarNode} khi cần thay vì cấp phát cả lưới $\Rightarrow$ giảm mạnh rác bộ nhớ vì A* được gọi liên tục.
+\end{itemize}
+
+\begin{lstlisting}[caption={Lõi A* trong WorldMap.java}]
+PriorityQueue<AstarNode> open = new PriorityQueue<>();
+open.add(startNode);
+int[][] dirs = {{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,-1},{1,1}};
+
+while (!open.isEmpty()) {
+    AstarNode current = open.poll();
+    if (current.row == targetRow && current.col == targetCol)
+        return buildPath(current);                 // truy vet duong di
+    if (!visited.add(current.row * cols + current.col)) continue;
+
+    for (int[] dir : dirs) {                        // duyet 8 huong
+        int nr = current.row + dir[0], nc = current.col + dir[1];
+        if (!isGridInside(nr, nc)) continue;
+        if (!canEntityStandOnTerrain(entity, getTerrainAt(center))) continue;
+        double cost = (dir[0] != 0 && dir[1] != 0) ? Math.sqrt(2) : 1.0;
+        double newG = current.g + cost;
+        if (newG < next.g) {                        // tim duoc duong tot hon
+            next.parent = current;
+            next.g = newG;
+            next.h = calculateHeuristic(nr, nc, targetRow, targetCol);
+            open.add(next);
+        }
+    }
+}
+return null;   // khong co duong di
+\end{lstlisting}
+
+\subsection{Tối ưu: Densify, Caching và Lead Pursuit}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \keyword{Path densification:} đường A* thô (các điểm cách nhau $\sim 1$ ô) được nội suy thêm điểm trung gian mỗi $\frac{\text{cellSize}}{3}\approx5$px, giúp con vật bám đường mượt và nhận biết vật cản phía trước.
+    \item \keyword{Replan có điều kiện:} A* (khá nặng) chỉ được tính lại khi thực sự cần -- con mồi dịch xa quá $15$px, bị chặn ở bước trước, hết waypoint, hoặc đổi mục tiêu -- và bị chặn trần tần suất $\sim 3$ lần/giây qua \code{REPLAN\_COOLDOWN}.
+    \item \keyword{Lead pursuit (đón đầu):} thợ săn không đuổi theo \textit{vị trí hiện tại} mà nhắm tới \textit{vị trí dự đoán} của con mồi sau $\Delta t$ (tỉ lệ khoảng cách/tốc độ, chặn trần $0.7$s), giúp bắt mồi hiệu quả hơn.
+\end{itemize}
+
+\section{Mô tả chi tiết từng chiến lược}
+
+\subsection{WanderStrategy -- Lang thang}
+Áp dụng kỹ thuật \textit{Wander Steering} của Craig Reynolds: tạo một vòng tròn ảo phía trước con vật, chọn điểm trên vòng đó làm đích, và điều chỉnh góc $\theta$ ngẫu nhiên mỗi frame trong khoảng $\pm0.25$ rad để tạo chuyển động tự nhiên, không giật.
+
+\subsection{FleeStrategy -- Chạy trốn}
+\begin{enumerate}[leftmargin=2em]
+    \item Tìm kẻ thù gần nhất qua \code{RelationManager.isScaredOf()}.
+    \item Chọn đích trốn theo loài: \textbf{Thỏ} tìm ô BUSH gần nhất (ẩn nấp); \textbf{Cá} tìm ô WATER xa kẻ thù nhất; loài khác tìm ô LAND xa kẻ thù nhất.
+    \item Dùng A* tìm đường tới đích.
+\end{enumerate}
+\textit{Đặc biệt:} Thỏ đang trong bụi rậm sẽ \textbf{đứng yên hoàn toàn} (vận tốc $=\vec0$) và không bị thú săn nhắm tới.
+
+\subsection{HunterStrategy -- Tìm \& săn mồi}
+\begin{enumerate}[leftmargin=2em]
+    \item Tìm con mồi gần nhất qua \code{RelationManager.isPrey()}, bỏ qua xác chết và con mồi đang núp trong bụi.
+    \item Nếu trong tầm tương tác: ăn ngay, ghi nhận tử vong \code{PREDATION} và phát sự kiện.
+    \item Nếu còn xa: tính đường A* (có cache + đón đầu), bám waypoint; khi cận chiến thì lao thẳng vào điểm đón đầu.
+\end{enumerate}
+
+\subsection{SeekWaterStrategy -- Tìm nước}
+\begin{enumerate}[leftmargin=2em]
+    \item Tìm máng nước/mép nước gần nhất trong tầm nhìn, ghi nhớ vào \code{lastKnownWaterPos}.
+    \item Loài \textit{xuống được nước} (Cá, Voi, Gấu) tiến vào tới độ sâu cần thiết rồi uống; loài \textit{không xuống nước} (Thỏ, Sói) uống khi cạnh cơ thể chạm mép nước.
+    \item Riêng \textbf{Voi} chỉ uống tại \textit{máng nước} (\code{chouongnuoc}); khi đó kích hoạt hoạt ảnh uống nước theo hướng tới nguồn nước.
+    \item Có cơ chế \textit{hysteresis 2 ngưỡng}: bắt đầu đi tìm nước khi khát $>70$, nhưng đã uống thì uống cho tới khi khát tụt dưới $25$ -- chống cảnh chạy ra/vào mép nước liên tục.
+\end{enumerate}
+
+\subsection{MateStrategy -- Tìm bạn tình}
+\begin{enumerate}[leftmargin=2em]
+    \item Tìm cá thể cùng loài đủ điều kiện sinh sản trong tầm nhìn.
+    \item Khi vào tầm giao phối, cá thể có \textbf{ID nhỏ hơn} gọi \code{spawnOffspring()} (tránh sinh đôi trùng lặp).
+    \item Con non sinh ra ở vị trí an toàn quanh bố mẹ; cả hai bị trừ "chi phí đói" và bắt đầu thời gian hồi chiêu.
+\end{enumerate}
+
+\section{Mô hình vật lý chuyển động (Steering Behaviors)}
+
+Chuyển động dựa trên mô hình lái của Reynolds. Vận tốc được điều chỉnh mượt qua lực lái, có giới hạn lực ($F_{max}$) và tốc độ ($v_{max}$):
+\begin{align}
+\vec{v}_{desired} &= \hat{d}\cdot v_{max} \\
+\vec{steering}    &= \vec{v}_{desired} - \vec{v}_{current} \\
+\vec{a}           &= \mathrm{clamp}\big(\vec{steering}\cdot k_{steering},\ F_{max}\big) \\
+\vec{v}_{new}     &= \mathrm{clamp}\big(\vec{v}_{current} + \vec{a}\,\Delta t,\ v_{max}\big)
+\end{align}
+Mỗi loài có \code{mass} khác nhau, ảnh hưởng tới quán tính: \textbf{Gấu} ($mass=12$) khó dừng đột ngột, còn \textbf{Thỏ} ($mass=0.5$) xoay xở rất linh hoạt.
+
+% ===================================================
+%                   CHAPTER 5
+% ===================================================
+\chapter{Mô hình thực thể và Hệ sinh thái}
+
+\section{Thông số các loài động vật}
+
+\begin{table}[H]
+\centering
+\caption{Thông số cơ bản của 5 loài động vật}
+\begin{tabular}{L{2.1cm} C{1.9cm} C{1.1cm} C{1cm} C{1.5cm} C{1.4cm} C{1.6cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Loài}} &
+\textcolor{white}{\textbf{Nhóm}} &
+\textcolor{white}{\textbf{Cỡ}} &
+\textcolor{white}{\textbf{HP}} &
+\textcolor{white}{\textbf{Tốc độ}} &
+\textcolor{white}{\textbf{Lực}} &
+\textcolor{white}{\textbf{Tầm nhìn}} \\
+\midrule
+Thỏ (Rabbit) & Ăn cỏ & 10 & 100 & 32 & 38 & 50 \\
+\rowcolor{tablerow} Voi (Elephant) & Ăn cỏ & 30 & 100 & 26 & 36 & 50 \\
+Cá (Fish) & Ăn cỏ & 15 & 100 & 30 & 20 & 50 \\
+\rowcolor{tablerow} Sói (Wolf) & Ăn thịt & 30 & 200 & 40 & 70 & 70 \\
+Gấu (Bear) & Ăn thịt & 30 & 200 & 32 & 40 & 50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Tốc độ tiêu hao và khối lượng}
+
+\begin{table}[H]
+\centering
+\caption{Tốc độ tiêu hao đói/khát (mỗi giây) và khối lượng}
+\begin{tabular}{L{3cm} C{3cm} C{3cm} C{2.5cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Loài}} &
+\textcolor{white}{\textbf{Đói/giây}} &
+\textcolor{white}{\textbf{Khát/giây}} &
+\textcolor{white}{\textbf{Khối lượng}} \\
+\midrule
+Thỏ & 2.0 & 5.0 & 0.5 \\
+\rowcolor{tablerow} Voi & 5.0 & 6.0 & 10.0 \\
+Cá & 0.5 & 0.0 & 3.0 \\
+\rowcolor{tablerow} Sói & 3.0 & 5.0 & 3.0 \\
+Gấu & 1.5 & 2.0 & 12.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\note{\textbf{Cá không có chỉ số khát} (\code{thirstRate}$=0$) vì sống dưới nước. Nhịp tiêu hao đói của Cá ($0.5$/giây) được hiệu chỉnh ăn khớp với nhịp sinh sản của Tảo ($140$ giây) để cá luôn có đủ thức ăn vừa phải -- một ví dụ về \textit{cân bằng hệ sinh thái}.}
+
+\section{Thông số sinh sản}
+
+Điều kiện sinh sản (\code{canReproduce}): còn sống, tuổi $\geq$ \code{matureAge}, hết thời gian hồi chiêu, đói $<50$ và khát $<50$.
+
+\begin{table}[H]
+\centering
+\caption{Thông số sinh sản theo loài}
+\begin{tabular}{L{3cm} C{3.5cm} C{3cm} C{2.5cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Loài}} &
+\textcolor{white}{\textbf{Tuổi trưởng thành}} &
+\textcolor{white}{\textbf{Hồi chiêu}} &
+\textcolor{white}{\textbf{Chi phí đói}} \\
+\midrule
+Thỏ & 4s & 10s & 10 \\
+\rowcolor{tablerow} Cá & 10s & 8s & 15 \\
+Sói & 10s & 30s & 35 \\
+\rowcolor{tablerow} Gấu & 15s & 40s & 35 \\
+Voi & 20s & 60s & 40 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hành vi đặc trưng từng loài}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \keyword{Thỏ:} nhỏ, nhanh, tầm nhìn rộng. Khi bị săn sẽ tìm bụi rậm (BUSH) ẩn nấp; trong bụi thì đứng im và "tàng hình" trước thú săn.
+    \item \keyword{Cá:} chỉ sống và di chuyển trên mặt nước (WATER), không có chỉ số khát.
+    \item \keyword{Voi:} khối lượng lớn, khởi tạo với độ khát cao ($80$) nên đi tìm nước ngay từ đầu; chỉ uống ở \textit{máng nước} kèm hoạt ảnh uống nước riêng. Voi khiến mọi loài khác (kể cả Sói, Gấu) hoảng sợ và bản thân không sợ ai.
+    \item \keyword{Gấu:} apex predator, khối lượng lớn nhất ($12$), xuống được nước để săn Cá, săn được cả Thỏ.
+    \item \keyword{Sói:} thợ săn nhanh nhất ($v_{max}=40$), tầm nhìn xa nhất ($70$), chuyên săn Thỏ.
+\end{itemize}
+
+\section{Thực vật}
+
+\begin{table}[H]
+\centering
+\caption{Thông số thực vật}
+\begin{tabular}{L{2.5cm} C{2cm} C{2.5cm} C{2.5cm} L{2.5cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Loại}} &
+\textcolor{white}{\textbf{Dinh dưỡng}} &
+\textcolor{white}{\textbf{Sinh sản}} &
+\textcolor{white}{\textbf{Mọc lại}} &
+\textcolor{white}{\textbf{Địa hình}} \\
+\midrule
+Cỏ (Grass) & 30 & 10s & 30s & LAND \\
+\rowcolor{tablerow} Tảo (Algae) & 30 & 140s & không & WATER \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cỏ bị ăn sẽ \textit{mọc lại} sau $30$s (chỉ biến mất tạm thời), còn Tảo bị ăn thì \textit{biến mất hẳn}. Cả hai chỉ sinh sản trên đúng loại địa hình của mình và phải cách cây cùng loại tối thiểu $18$px (chống mọc chồng chất).
+
+\section{Chuỗi thức ăn và quan hệ đe dọa}
+
+Lớp \code{RelationManager} (toàn bộ \code{static}) quản lý hai quan hệ tách biệt: \textit{ai săn ai} (\code{isPrey}) và \textit{ai sợ ai} (\code{isScaredOf}). Hai quan hệ này khác nhau: Voi không săn Sói nhưng vẫn khiến Sói bỏ chạy.
+
+\begin{table}[H]
+\centering
+\caption{Ma trận chuỗi thức ăn và nỗi sợ}
+\begin{tabular}{L{2.3cm} L{2.8cm} L{2.8cm} L{3.5cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Loài}} &
+\textcolor{white}{\textbf{Ăn}} &
+\textcolor{white}{\textbf{Bị săn bởi}} &
+\textcolor{white}{\textbf{Bỏ chạy khỏi}} \\
+\midrule
+Thỏ & Cỏ & Sói, Gấu & Sói, Gấu, Voi \\
+\rowcolor{tablerow} Cá & Tảo & Gấu & Gấu, Sói, Voi \\
+Voi & Cỏ & -- & -- (không sợ ai) \\
+\rowcolor{tablerow} Sói & Thỏ & -- & Voi, Gấu \\
+Gấu & Thỏ, Cá & -- & Voi \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===================================================
+%                   CHAPTER 6
+% ===================================================
+\chapter{Thế giới, Địa hình và Vật lý}
+
+\section{WorldMap -- trung tâm điều phối}
+
+\code{WorldMap} là lớp lớn nhất và quan trọng nhất, đóng nhiều vai trò: \textit{kho chứa} mọi thực thể, \textit{cung cấp dịch vụ} tìm đường/tra cứu địa hình/va chạm cho các chiến lược, \textit{Subject} của hệ thống Observer, và \textit{trình kết xuất} (render) lên Canvas.
+
+Để tối ưu, ngoài danh sách \code{entities} tổng quát, \code{WorldMap} duy trì các \textit{tập con tra cứu nhanh}: \code{livingEntities} (chỉ động vật, cho kiểm tra va chạm) và \code{terrainProviders} (chỉ vật cản đặt thêm, cho tra địa hình) -- tránh quét cả map gồm hàng trăm cây cỏ ở các hàm "nóng". Vòng \code{update()} cũng dọn cache theo ID khi thực thể chết để tránh rò rỉ bộ nhớ.
+
+\section{Hệ thống địa hình từ TMX và Bản đồ 4 mùa}
+
+Địa hình \textbf{không} mã hóa cứng trong code mà được \keyword{trích từ file \code{all.tmx}} (định dạng Tiled, bản chất là XML) bởi lớp \code{TmxObjectZones}. File này định nghĩa các \textit{nhóm đối tượng} (object group) làm vùng logic:
+
+\begin{table}[H]
+\centering
+\caption{Các nhóm đối tượng trong all.tmx}
+\begin{tabular}{L{3.5cm} L{9cm}}
+\toprule
+\rowcolor{tablehead}\textcolor{white}{\textbf{Nhóm}} & \textcolor{white}{\textbf{Ý nghĩa}} \\
+\midrule
+\code{ho} & Vùng nước (hồ) \\
+\rowcolor{tablerow} \code{vatcan} & Vật cản / đá \\
+\code{chotron} & Bụi rậm -- nơi Thỏ ẩn nấp \\
+\rowcolor{tablerow} \code{chouongnuoc} & Máng nước -- nơi Voi uống nước \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Bản đồ gốc trong Tiled là $39\times39$ ô $\times32$px ($=1248\times1248$), được \textit{co tỉ lệ} ($\approx0.46$) về khung hiển thị $576\times576$. Bốn mùa (Xuân/Hạ/Thu/Đông) \keyword{dùng chung một file địa hình} -- chuyển mùa chỉ đổi \textit{ảnh nền}, không đổi logic nước/vật cản/bụi. Mùa tự động xoay vòng mỗi $60$s với hiệu ứng hòa hình $6$s. Đây là một thiết kế đẹp về tái sử dụng: một nguồn logic cho bốn diện mạo.
+
+\code{WorldMap.getTerrainAt()} tổng hợp địa hình theo thứ tự ưu tiên: (1) vật cản người dùng đặt thêm lúc chạy $\to$ (2) vùng đối tượng trong TMX $\to$ (3) mặc định LAND.
+
+\section{Loại địa hình và ràng buộc di chuyển}
+
+\begin{table}[H]
+\centering
+\caption{Loại địa hình và loài đi qua được (\code{canStandOn})}
+\begin{tabular}{L{2.5cm} L{4cm} L{6cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{TerrainType}} &
+\textcolor{white}{\textbf{Mô tả}} &
+\textcolor{white}{\textbf{Loài đi được}} \\
+\midrule
+LAND & Đất liền & Tất cả trừ Cá \\
+\rowcolor{tablerow} WATER & Mặt nước & Cá, Voi, Gấu \\
+BUSH & Bụi rậm & Chỉ Thỏ \\
+\rowcolor{tablerow} ROCK & Đá & Không loài nào \\
+PIT & Hố sâu & Không loài nào \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Hàm \code{canStandOn()} không chỉ kiểm tra tâm mà kiểm tra cả \keyword{9 điểm} quanh bán kính cơ thể (tâm + 4 hướng thẳng + 4 hướng chéo), bảo đảm con vật không "lọt nửa người" vào vật cản, đồng thời kiểm tra va chạm với động vật khác.
+
+\section{Va chạm và phản xạ chuyển động}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \keyword{Va chạm động vật:} \code{collidesWithAnotherLivingEntity()} ngăn hai con vật chồng lên nhau, nhưng \textit{nới lỏng} khoảng cách khi đó là quan hệ săn mồi (để thú săn áp sát con mồi).
+    \item \keyword{Né vật cản:} khi bước kế tiếp không hợp lệ, \code{avoidBlockedDirection()} thử lệch hướng dần ($\pm30^\circ, \pm60^\circ, \dots, 180^\circ$), ưu tiên góc lệch nhỏ nhất để giữ quán tính, không đổi hướng đột ngột.
+    \item \keyword{Phản xạ ở biên:} \code{handleOutOfMap()} kẹp vị trí trong bản đồ và "dội" vận tốc như va vào tường.
+    \item \keyword{Chống xuyên vật cản khi lag:} \code{dt} được kẹp trần $0.05$s để một khung hình chậm không khiến con vật "dịch chuyển tức thời" xuyên qua đá/nước.
+\end{itemize}
+
+% ===================================================
+%                   CHAPTER 7
+% ===================================================
+\chapter{Giao diện và Trải nghiệm người dùng}
+
+\section{Bố cục giao diện}
+
+\begin{table}[H]
+\centering
+\caption{Các thành phần giao diện}
+\begin{tabular}{L{4cm} L{8cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Thành phần}} & \textcolor{white}{\textbf{Chức năng}} \\
+\midrule
+Canvas ($576\times576$) & Khung render mô phỏng chính \\
+\rowcolor{tablerow} Thanh công cụ (toolbar) & Nút đặt sinh vật/vật cản, thanh zoom, đồng hồ sinh tồn, menu mùa \\
+ListView & Nhật ký sự kiện: săn mồi, sinh sản, tử vong (cuộn, giữ 20 dòng gần nhất) \\
+\rowcolor{tablerow} EntityStatusPanel & Bảng thống kê chi tiết theo loài (bật/tắt bằng phím TAB) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Vòng lặp game (Game Loop)}
+
+Trái tim thời gian thực là một \code{AnimationTimer} (\code{\textasciitilde}60 FPS). Mỗi khung hình tính \code{dt} theo \textit{thời gian thực} giữa hai frame nên chuyển động đều dù FPS dao động:
+
+\begin{lstlisting}[caption={Vòng lặp chính trong MainApp}]
+AnimationTimer timer = new AnimationTimer() {
+    private long lastNow = 0;
+    @Override public void handle(long now) {
+        double dt = (lastNow == 0) ? 1.0/60.0 : (now - lastNow) / 1e9;
+        lastNow = now;
+        dt = Math.min(dt, 0.05);          // kep tran chong "teleport" khi lag
+        gc.clearRect(0, 0, WIDTH, HEIGHT);
+        worldMap.update(dt);              // cap nhat toan bo the gioi
+        worldMap.render(gc);              // ve len canvas
+        tickSeasonCycle(dt);              // xoay vong mua
+        tickSurvivalClock(dt);            // dem gio sinh ton
+        // ... refresh bang thong ke ~6-7Hz ...
+    }
+};
+\end{lstlisting}
+
+\section{Điều khiển}
+
+\begin{table}[H]
+\centering
+\caption{Phím tắt và thao tác chuột}
+\begin{tabular}{L{4cm} L{8cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Thao tác}} & \textcolor{white}{\textbf{Hành động}} \\
+\midrule
+Kéo chuột & Di chuyển camera (khi zoom $>1.0$) \\
+\rowcolor{tablerow} Thanh trượt / nút $\pm$ & Phóng to/thu nhỏ từ $1.0\times$ đến $3.0\times$ \\
+Chọn nút + Click trái & Đặt sinh vật/vật cản lên bản đồ tại vị trí click \\
+\rowcolor{tablerow} TAB & Bật/tắt bảng thống kê EntityStatusPanel \\
+ESC & Hủy chế độ đặt, quay về chọn Thỏ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Khi đặt sinh vật, hệ thống \textbf{kiểm tra hợp lệ} trước: Cỏ chỉ đặt trên đất, Tảo chỉ trên nước, vật cản không chồng lên nước/đá, động vật phải đứng được ở ô đó -- nếu không, một thông báo sẽ hiện trong nhật ký.
+
+\section{Kết xuất và hoạt ảnh}
+
+Mỗi loài động vật có \keyword{hoạt ảnh sprite theo 4 hướng} (lên/xuống/trái/phải). Hướng được suy ra từ vector vận tốc, khung hình hoạt ảnh đổi theo thời gian. Ảnh sprite được \textit{cache} lại trong \code{imageCache} để không phải đọc đĩa mỗi frame. \code{WorldMap.render()} còn vẽ các lớp gỡ lỗi tùy chọn: vòng tròn tầm nhìn, vòng wander, và đường đi A* -- rất hữu ích để quan sát "suy nghĩ" của AI.
+
+\section{Thống kê và đồng hồ sinh tồn}
+
+\code{EntityStatusPanel} cung cấp hai chế độ xem: \textit{tổng quan} (số cá thể sống và số tử vong theo loài/nguyên nhân) và \textit{chi tiết} (HP, đói, khát của từng cá thể qua thanh tiến trình màu). Bảng được làm tươi $\sim6$--$7$Hz thay vì mỗi frame để tránh nặng giao diện.
+
+\code{WorldMap} duy trì bảng đếm tử vong dạng lồng nhau:
+\[
+\text{Map}\langle\text{EntityType},\ \text{EnumMap}\langle\text{DeathCause},\ \text{Integer}\rangle\rangle
+\]
+với ba nguyên nhân \code{HUNGER} (đói), \code{THIRST} (khát), \code{PREDATION} (bị săn). \keyword{Đồng hồ sinh tồn} đếm thời gian từ lúc bắt đầu cho tới khi \textbf{không còn động vật nào sống}, hiển thị dạng \code{MM:SS} và chuyển trạng thái "đã kết thúc" khi hệ sinh thái sụp đổ.
+
+% ===================================================
+%                   CHAPTER 8
+% ===================================================
+\chapter{Tổng kết}
+
+\section{Kết quả đạt được}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item Hiện thực hoàn chỉnh hệ sinh thái với \keyword{5 loài động vật} và \keyword{2 loài thực vật}, vận hành ổn định theo thời gian thực.
+    \item Vận dụng đầy đủ \keyword{bốn tính chất OOP} và \keyword{4 mẫu thiết kế} chính (Strategy, Observer, Template Method, Factory Method).
+    \item Hệ thống AI đa chiến lược với cơ chế chấm điểm chống "rung", kết hợp thuật toán \keyword{A*} cùng nhiều tối ưu (densify, caching, lead pursuit).
+    \item Kiến trúc \keyword{tách lớp rõ ràng} (entity / strategy / world / UI), dễ mở rộng: thêm loài mới hay hành vi mới gần như không phải sửa code cũ.
+    \item Giao diện trực quan với zoom/pan, đặt sinh vật, nhật ký sự kiện, bảng thống kê thời gian thực và bản đồ 4 mùa.
+\end{itemize}
+
+\section{Tổng kết chỉ số kỹ thuật}
+
+\begin{table}[H]
+\centering
+\caption{Bảng tổng kết chỉ số kỹ thuật}
+\begin{tabular}{L{6cm} L{6cm}}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\textbf{Chỉ số}} & \textcolor{white}{\textbf{Giá trị}} \\
+\midrule
+Tổng số lớp Java & 37 \\
+\rowcolor{tablerow} Số lớp trừu tượng / interface & 8 / 3 \\
+Số loài động vật & 5 (Thỏ, Sói, Gấu, Voi, Cá) \\
+\rowcolor{tablerow} Số loài thực vật & 2 (Cỏ, Tảo) \\
+Số chiến lược AI & 5 \\
+\rowcolor{tablerow} Design patterns & Strategy, Observer, Template Method, Factory \\
+Thuật toán tìm đường & A* (8 hướng, heuristic Euclidean) \\
+\rowcolor{tablerow} Kích thước khung hiển thị & $576\times576$px \\
+Lưới địa hình & $\sim39\times39$ ô ($\sim15$px/ô) \\
+\rowcolor{tablerow} FPS mục tiêu & $\sim60$ FPS ($\Delta t$ kẹp $\leq0.05$s) \\
+Mức zoom & $1.0\times$ -- $3.0\times$ \\
+\rowcolor{tablerow} Số mùa & 4 (tự xoay vòng mỗi 60s) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hướng phát triển}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item Thêm \keyword{chu kỳ ngày/đêm} và ảnh hưởng của mùa lên hành vi (mùa đông khan hiếm thức ăn\dots).
+    \item Vẽ \keyword{biểu đồ động lực quần thể} (mô hình Lotka--Volterra) theo thời gian.
+    \item Tối ưu truy vấn lân cận bằng \keyword{spatial hashing}/quadtree thay vì quét tuyến tính.
+    \item Cho phép \keyword{lưu/tải} trạng thái mô phỏng và tua nhanh/chậm thời gian.
+    \item Bổ sung yếu tố \keyword{di truyền} (con thừa hưởng và đột biến thông số của bố mẹ).
+\end{itemize}
+
+\vspace{1cm}
+\begin{center}
+\rule{0.5\textwidth}{0.5pt}\\[0.5em]
+\textit{--- Hết ---}
+\end{center}
+
+\end{document}
